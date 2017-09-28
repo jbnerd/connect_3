@@ -6,6 +6,15 @@ class State(object):
 		self.matrix = matrix
 		self.player = player
 
+	def __str__(self):
+		return "state: " + str(self.matrix) + " - player: " + str(self.player)
+
+	def __repr__(self):
+		return "state: " + str(self.matrix) + " - player: " + str(self.player)
+
+	def __hash__(self):
+		return hash(tuple([tuple(x) for x in self.matrix]))
+
 	def count_coins(self, player_num):
 		count = 0
 		if player_num == 1:
@@ -17,10 +26,10 @@ class State(object):
 			for i in self.matrix:
 				for j in i:
 					if j == 2:
-						count += 2
+						count += 1
 		return count
 
-	def player(self):
+	def player_turn(self):
 		bot_coins = self.count_coins(1)
 		human_coins = self.count_coins(2)
 		if bot_coins == human_coins:
@@ -29,21 +38,21 @@ class State(object):
 			return 2
 
 	def change_player(self):
-		if self.state.player == 1:
-			self.state.player = 2
+		if self.player == 1:
+			return 2
 		else:
-			self.state.player = 1
+			return 1
 
 	def action(self):
 		action_list = ['x', 'x', 'x', 'x']
-		if self.matrix[3][0] != 0:
-			temp[0] = 0
-		if self.matrix[3][1] != 0:
-			temp[1] = 1
-		if self.matrix[3][2] != 0:
-			temp[2] = 2
-		if self.matrix[3][3] != 0:
-			temp[3] = 3
+		if self.matrix[3][0] == 0:
+			action_list[0] = 0
+		if self.matrix[3][1] == 0:
+			action_list[1] = 1
+		if self.matrix[3][2] == 0:
+			action_list[2] = 2
+		if self.matrix[3][3] == 0:
+			action_list[3] = 3
 		return action_list
 
 	def lowest_empty_row(self, col):
@@ -55,35 +64,37 @@ class State(object):
 			return 2
 		elif self.matrix[3][col] == 0:
 			return 3
+		else:
+			return -1
 
 	def result(self, action):
 		if action != 'x':
 			row = self.lowest_empty_row(action)
 			temp = copy.deepcopy(self.matrix)
-			temp[row][action] = self.player()
-			new_state = State(temp, self.change_player())
+			temp[row][action] = self.player_turn()
+			new_state = State(matrix = temp, player = self.change_player())
 			return new_state
 
-	def check_hori(self, row_num, col_num):
-		if row_num <= 1 and self.matrix[row_num][col_num] == self.matrix[row_num + 1][col_num] and self.matrix[row_num][col_num] == self.matrix[row_num + 2][col_num]:
+	def check_verti(self, row_num, col_num):
+		if self.matrix[row_num][col_num] != 0 and row_num <= 1 and self.matrix[row_num][col_num] == self.matrix[row_num + 1][col_num] and self.matrix[row_num][col_num] == self.matrix[row_num + 2][col_num]:
 			return True
 		else:
 			return False
 
-	def check_verti(self, row_num, col_num):
-		if col_num <= 1 and self.matrix[row_num][col_num] == self.matrix[row_num][col_num + 1] and self.matrix[row_num][col_num] == self.matrix[row_num][col_num + 2]:
+	def check_hori(self, row_num, col_num):
+		if self.matrix[row_num][col_num] != 0 and col_num <= 1 and self.matrix[row_num][col_num] == self.matrix[row_num][col_num + 1] and self.matrix[row_num][col_num] == self.matrix[row_num][col_num + 2]:
 			return True
 		else:
 			return False
 
 	def check_right_diag(self, row_num, col_num):
-		if row_num <= 1 and col_num <= 1 and self.matrix[row_num][col_num] == self.matrix[row_num + 1][col_num + 1] and self.matrix[row_num][col_num] == self.matrix[row_num + 2][col_num + 2]:
+		if self.matrix[row_num][col_num] != 0 and row_num <= 1 and col_num <= 1 and self.matrix[row_num][col_num] == self.matrix[row_num + 1][col_num + 1] and self.matrix[row_num][col_num] == self.matrix[row_num + 2][col_num + 2]:
 			return True
 		else:
 			return False
 
 	def check_left_diag(self, row_num, col_num):
-		if row_num <= 1 and col_num >= 2 self.matrix[row_num][col_num] == self.matrix[row_num + 1][col_num - 1] and self.matrix[row_num][col_num] == self.matrix[row_num + 2][col_num - 2]:
+		if self.matrix[row_num][col_num] != 0 and row_num <= 1 and col_num >= 2 and self.matrix[row_num][col_num] == self.matrix[row_num + 1][col_num - 1] and self.matrix[row_num][col_num] == self.matrix[row_num + 2][col_num - 2]:
 			return True
 		else:
 			return False
@@ -95,81 +106,136 @@ class State(object):
 		return True
 
 	def terminal_test(self):
-		for row_num, row in enumerate(matrix):
+		is_full = False
+		is_won = False
+		for row_num, row in enumerate(self.matrix):
 			for col_num, element in enumerate(row):
 				result = self.check_hori(row_num, col_num)
-				if result == False, True:
-					return result
+				if result == True:
+					# print("hori")
+					is_won = True
+					# return False, result
 				result = self.check_verti(row_num, col_num)
-				if result == False, True:
-					return result
+				if result == True:
+					# print("verti")
+					is_won = True
+					# return False, result
 				result = self.check_right_diag(row_num, col_num)
-				if result == False, True:
-					return result
+				if result == True:
+					# print("rigth_diag")
+					is_won = True
+					# return False, result
 				result = self.check_left_diag(row_num, col_num)
-				if result == False, True:
-					return result
+				if result == True:
+					# print("left_diag")
+					is_won = True
+					# return False, result
 				result = self.check_full()
-				if result = True:
-					return True, True
-		return False, False
+				if result == True:
+					# print("full")
+					is_full = True
+					# return True, True
+		# return False, False
+		return is_full, is_won
 
 	def utility_function(self):
 		if self.check_full():
 			return 0
 		else:
-			if self.player() == 1:
-				return 1
-			else:
+			if self.player_turn() == 1:
 				return -1
+			else:
+				return 1
 
 	def minimax_decision(self):
 		action_list = self.action()
-		util_values = []
+		util_values = {}
+		explored = set()
 		for action in action_list:
-			util_values.append(self.min_value(self.result(action)))
-		max_val = max(util_values)
-		for index, value in enumerate(util_values):
-			if value == max_val:
-				return index
+			temp = self.result(action)
+			if temp is not None and temp not in explored:
+				print(temp)
+				explored.add(temp)
+				util_values[action] = min_value(temp, explored)
+				# util_values.append(min_value(temp))
+		print("-------------------------")
+		print(util_values)
+		max_val = -100
+		action = -1
+		for act, util_value in util_values.items():
+			if max_val < util_value:
+				max_val = util_value
+				action = act
+		return action
+		# max_val = max(util_values)
+		# print(max_val)
+		# for index, value in enumerate(util_values):
+		# 	if value == max_val:
+		# 		print(str(value) + " : " + str(index))
+		# 		return index
 
-	def min_value(self, new_state):
-		is_full, is_won = new_state.terminal_test()
-		if is_won:
-			return utility_function(new_state)
-		elif is_full:
-			return 0
+def min_value(state, explored):
+	is_full, is_won = state.terminal_test()
+	if is_won:
+		print("terminal test: " + str(state.utility_function()))
+		return state.utility_function()
+	elif is_full:
+		return 0
 
-		v = 100
-		action_list = new_state.action()
+	v = 100
+	action_list = state.action()
 
-		util_values = []
-		for action in action_list:
-			util_values.append(self.max_value(self.result(action)))
-		min_val = min(util_values)
+	util_values = []
+	for action in action_list:
+		temp = state.result(action)
+		if temp is not None and temp not in explored:
+			print(temp)
+			util_values.append(max_value(temp, explored))
+	print("------------------------------------------------------------")
+	min_val = min(util_values)
 
-		if v < min_val:
-			return v
-		else:
-			return min_val
+	if v < min_val:
+		return v
+	else:
+		return min_val
 
-	def max_value(self, new_state):
-		is_full, is_won = new_state.terminal_test()
-		if is_won:
-			return utility_function(new_state)
-		elif is_full:
-			return 0
+def max_value(state, explored):
+	is_full, is_won = state.terminal_test()
+	if is_won:
+		return state.utility_function()
+	elif is_full:
+		return 0
 
-		v = -100
-		action_list = new_state.action()
+	v = -100
+	action_list = state.action()
 
-		util_values = []
-		for action in action_list:
-			util_values.append(self.min_value(self.result(action)))
-		max_val = max(util_values)
+	util_values = []
+	for action in action_list:
+		temp = state.result(action)
+		if temp is not None and temp not in explored:
+			print(temp)
+			util_values.append(min_value(temp, explored))
+	print("------------------------------------------------------------")
+	max_val = max(util_values)
 
-		if v > min_val:
-			return v
-		else:
-			return max_val
+	if v > max_val:
+		return v
+	else:
+		return max_val
 
+def main():
+	begin = State(matrix = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]])
+	begin.player = begin.player_turn()
+	print(begin)
+	print("-----------------------------------------------------------------------------")
+	# action_list = begin.action()
+	# for action in action_list:
+	# 	temp = begin.result(action)
+	# 	if temp is not None:
+	# 		print(begin.result(action))
+	# print(begin.terminal_test())
+	print(begin.minimax_decision())
+	# print(begin.terminal_test())
+
+if __name__ == "__main__":
+	main()
