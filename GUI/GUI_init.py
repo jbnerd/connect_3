@@ -104,3 +104,7 @@ def fillCircles(grid_coordinate, grid_square_size, minmax):
 	fill_t.begin_fill()
 	fill_t.circle(grid_square_size/2)
 	fill_t.end_fill()
+
+if __name__ == "__main__":
+	screen, r_cood_list, gameplay_cood_list, grid_square_size, grid_start_coordinates, text_t, grid_t = initialise_board()
+	screen.exitonclick()

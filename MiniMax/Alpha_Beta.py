@@ -7,7 +7,7 @@ class State(object):
 		self.player = player
 
 	def __str__(self):
-		return "state: " + str(self.matrix) + " - player: " + str(self.player)
+		return str(self.matrix[0]) + "\n" + str(self.matrix[1]) + "\n" + str(self.matrix[2]) + "\n" + str(self.matrix[3]) + "\n - player: " + str(self.player)
 
 	def __repr__(self):
 		return str(self.matrix)
@@ -147,95 +147,82 @@ class State(object):
 			else:
 				return 1
 
-	def minimax_decision(self):
-		action_list = self.action()
-		util_values = {}
-		for action in action_list:
-			temp = self.result(action)
-			if temp is not None:
-				# print(temp)
-				util_values[action] = min_value(temp)#, explored)
-				# expl_values.append(min_value(temp))
-		# print("-------------------------")
-		print(util_values)
-		max_val = -100
-		action = -1
-		for act, util_value in util_values.items():
-			if max_val < util_value:
-				max_val = util_value
-				action = act
+	def alpha_beta_search(self):
+		v, action = max_value(self, -100, 100)
 		return action
-
-def min_value(state):#, explored):
+		
+def min_value(state, alpha, beta):#, explored):
+	# print("min")
 	is_full, is_won = state.terminal_test()
 	if is_won:
-		# print("terminal test: " + str(state.utility_function()))
-		return state.utility_function()
+		return state.utility_function(), None
 	elif is_full:
-		return 0
+		return 0, None
 
 	v = 100
 	action_list = state.action()
+	ret = None
 
-	util_values = []
 	for action in action_list:
 		temp = state.result(action)
-		if temp is not None:# and temp not in explored:
+		if temp is not None:
 			# print(temp)
-			maxi = max_value(temp)#, explored)
-			util_values.append(maxi)
-			# explored[temp] = maxi
-		# elif temp is not None:
-		# 	util_values.append(explored[temp])
-	# print("------------------------------------------------------------")
-	min_val = min(util_values)
+			maxi, garb = max_value(temp, alpha, beta)
+			# print("min------------------------------------------------------------")
+			if v > maxi:
+				# print(v, ret, "test1 min")
+				v = maxi
+				ret = action
+			# v = min(v, maxi)
+			# ret = action
+			if v <= alpha:
+				# print(v, ret, "test2 min")
+				return v, ret
+			# if beta > v:
+			# 	beta = v
+			beta = min(beta, v)
+	# print(v, ret, "return min")
+	return v, ret
 
-	if v < min_val:
-		return v
-	else:
-		return min_val
-
-def max_value(state):#, explored):
+def max_value(state, alpha, beta):
+	# print("max")
 	is_full, is_won = state.terminal_test()
 	if is_won:
-		return state.utility_function()
+		return state.utility_function(), None
 	elif is_full:
-		return 0
+		return 0, None
 
 	v = -100
 	action_list = state.action()
+	ret = None
 
-	util_values = []
 	for action in action_list:
 		temp = state.result(action)
-		if temp is not None:# and temp not in explored:
+		if temp is not None:
 			# print(temp)
-			mini = min_value(temp)#, explored)
-			util_values.append(mini)
-		# 	explored[temp] = mini
-		# elif temp is not None:
-		# 	util_values.append(explored[temp])
-	# print("------------------------------------------------------------")
-	max_val = max(util_values)
-
-	if v > max_val:
-		return v
-	else:
-		return max_val
+			mini, garb = min_value(temp, alpha, beta)
+			# print("max------------------------------------------------------------")
+			if v < mini:
+				# print(v, ret, "test1 max")
+				v = mini
+				ret = action
+			# v = max(v, mini)
+			# ret = action
+			if v >= beta:
+				# print(v, ret, "test2 max")
+				return v, ret
+			# if alpha < v:
+			# 	alpha = v
+			alpha = max(alpha, v)
+	# print(v, ret, "return max")
+	return v, ret
 
 def main():
-	begin = State(matrix = [[1,2,1,2],[2,1,2,1],[0,0,0,0],[0,0,0,0]])
+	begin = State(matrix = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]])
 	begin.player = begin.player_turn()
-	# print(begin)
+	print(begin)
 	# print("-----------------------------------------------------------------------------")
-	# action_list = begin.action()
-	# for action in action_list:
-	# 	temp = begin.result(action)
-	# 	if temp is not None:
-	# 		print(begin.result(action))
-	# print(begin.terminal_test())
-	print(begin.minimax_decision())
-	# print(begin.terminal_test())
-
+	print(begin.alpha_beta_search())
+	
 if __name__ == "__main__":
 	main()
