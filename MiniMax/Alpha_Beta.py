@@ -236,7 +236,10 @@ def start_game_alpha_beta():
 		state = next_state.result(human_action)
 		print(state)
 
-		
+# def main():
+# 	begin = State(matrix = [[1,2,1,2],[2,1,2,1],[2,1,0,0],[0,0,0,0]])
+# 	print(begin.alpha_beta_search())
 	
 if __name__ == "__main__":
 	start_game_alpha_beta()
+	# main()

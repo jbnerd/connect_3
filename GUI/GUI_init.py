@@ -1,6 +1,7 @@
 from turtle import *
 
 def show_text(width, height):
+	# Pationing the space
 	text_t = Turtle()
 	text_t.penup()
 	text_t.speed(0)
@@ -21,20 +22,23 @@ def show_text(width, height):
 		text_t.penup()
 		text_t.setpos(-1 * width/2 + 10, temp[1] - height/13)
 
+	# New Game and Exit Button Texts
 	gameplay_cood_list = []
 	text_t.setpos(0, (-1 * height)/2 + 50)
 	start1 = (0, (-1 * height)/2 + 50)
 	gameplay_cood_list.append(start1)
 	text_t.write("New Game Slow", move = True, font = ("Arial", 15, "bold"))
 	gameplay_cood_list.append(text_t.pos())
-	start2 = text_t.pos()[0] + 30, text_t.pos()[1]
+
+	start2 = (text_t.pos()[0] + 30, text_t.pos()[1])
 	gameplay_cood_list.append(start2)
 	text_t.setpos(text_t.pos()[0] + 30, text_t.pos()[1])
 	text_t.write("New Game Fast", move = True, font = ("Arial", 15, "bold"))
 	gameplay_cood_list.append(text_t.pos())
-	text_t.setpos(text_t.pos()[0] + 30, text_t.pos()[1])
-	start3 = text_t.pos()[0] + 30, text_t.pos()[1]
+
+	start3 = (text_t.pos()[0] + 30, text_t.pos()[1])
 	gameplay_cood_list.append(start3)
+	text_t.setpos(text_t.pos()[0] + 30, text_t.pos()[1])
 	text_t.write("Exit", move = True, font = ("Arial", 15, "bold"))
 	gameplay_cood_list.append(text_t.pos())
 
@@ -81,26 +85,26 @@ def initialise_board():
 
 	height = float(screen.window_height())
 	width = float(screen.window_width())
-	print(width, height)
+	# print(width, height)
 
 	r_cood_list, gameplay_cood_list, text_t = show_text(width, height)
 	# print(r_cood_list)
-	print(gameplay_cood_list)
+	# print(gameplay_cood_list)
 
 	grid_square_size = ((2*width/3) - 40)/4
 	grid_start_coordinates = [(width/3)-(width/2) + 20, height/2 - 40]
-	print(grid_start_coordinates)
-	print(grid_square_size)
+	# print(grid_start_coordinates)
+	# print(grid_square_size)
 	grid_t = grid_init(grid_square_size, gameplay_cood_list[0][1], width, height, grid_start_coordinates)
 	# done()
 
 	return screen, r_cood_list, gameplay_cood_list, grid_square_size, grid_start_coordinates, text_t, grid_t
 
-def fillCircles(grid_coordinate, grid_square_size, minmax):
-	fill_t = Turtle()
+def fillCircles(grid_coordinate, grid_square_size, player, fill_t, grid_number):
+	# print(grid_number)
 	fill_t.penup()
-	fill_t.setpos(grid_coordinate[0] + grid_square_size/2, grid_coordinate[1] - grid_square_size)
-	if minmax == 0:
+	fill_t.setpos(grid_coordinate[0] + grid_square_size/2 + grid_square_size*grid_number[1], grid_coordinate[1] - grid_square_size - grid_square_size*grid_number[0])
+	if player == 1:
 		fill_t.color("black", "green")
 	else:
 		fill_t.color("black", "blue")

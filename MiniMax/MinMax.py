@@ -1,7 +1,7 @@
 import copy
 
-class State(object):
-	"""docstring for State"""
+class myState(object):
+	"""docstring for myState"""
 	def __init__(self, matrix = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]], player = 1):
 		self.matrix = matrix
 		self.player = player
@@ -81,7 +81,7 @@ class State(object):
 			row = self.lowest_empty_row(action)
 			temp = copy.deepcopy(self.matrix)
 			temp[row][action] = self.player_turn()
-			new_state = State(matrix = temp, player = self.change_player())
+			new_state = myState(matrix = temp, player = self.change_player())
 			return new_state
 
 	def check_verti(self, row_num, col_num):
@@ -202,7 +202,6 @@ def min_value(state, explored):
 			util_values.append(explored[temp])
 	# print("------------------------------------------------------------")
 	min_val = min(util_values)
-
 	if v < min_val:
 		return v
 	else:
@@ -230,14 +229,13 @@ def max_value(state, explored):
 			util_values.append(explored[temp])
 	# print("------------------------------------------------------------")
 	max_val = max(util_values)
-
 	if v > max_val:
 		return v
 	else:
 		return max_val
 
 def start_game_minimax():
-	begin = State()
+	begin = myState()
 	state = begin
 	while True:
 		bot_action = state.minimax_decision()
@@ -252,7 +250,10 @@ def start_game_minimax():
 		state = next_state.result(human_action)
 		print(state)
 
-		
+# def main():
+# 	begin = myState()
+# 	print(begin.minimax_decision())
 	
 if __name__ == "__main__":
 	start_game_minimax()
+	# main()
