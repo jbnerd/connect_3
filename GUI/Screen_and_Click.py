@@ -20,7 +20,7 @@ class CheckClick(object):
 		self.grid_t = grid_t
 		self.text_t = text_t
 
-	def new_game(self):
+	def new_game_fast(self):
 		height = float(self.screen.window_height())
 		width = float(self.screen.window_width())
 		self.text_t.clear()
@@ -28,10 +28,21 @@ class CheckClick(object):
 		r_cood_list, gameplay_cood_list, self.text_t = show_text(width, height)
 		self.grid_t = grid_init(self.grid_square_size, self.gameplay_coordinates[0][1], width, height, self.grid_start_coordinates)
 
+	def new_game_slow(self):
+		height = float(self.screen.window_height())
+		width = float(self.screen.window_width())
+		self.text_t.clear()
+		self.grid_t.clear()
+		r_cood_list, gameplay_cood_list, self.text_t = show_text(width, height)
+		self.grid_t = grid_init(self.grid_square_size, self.gameplay_coordinates[0][1], width, height, self.grid_start_coordinates)
+
+
 	def check_click(self, x, y):
 		if x > self.gameplay_coordinates[0][0] and x < self.gameplay_coordinates[1][0] and y > self.gameplay_coordinates[0][1] - 10 and y < self.gameplay_coordinates[0][1] + 20:
-			return "new_game"			
+			return "new_game_fast"			
 		elif x > self.gameplay_coordinates[2][0] and x < self.gameplay_coordinates[3][0] and y > self.gameplay_coordinates[0][1] - 10 and y < self.gameplay_coordinates[0][1] + 20:
+			return "new_game_slow"
+		elif x > self.gameplay_coordinates[4][0] and x < self.gameplay_coordinates[5][0] and y > self.gameplay_coordinates[0][1] - 10 and y < self.gameplay_coordinates[0][1] + 20:
 			return "exit"
 
 		else:
@@ -49,10 +60,12 @@ class CheckClick(object):
 
 	def onclick_action(self, x, y):
 		result = self.check_click(x, y)
-		if result == "new_game":
-			self.new_game()
+		if result == "new_game_fast":
+			self.new_game_fast()
 		elif result == "exit":
 			sys.exit()
+		elif result == "new_game_slow":
+			self.new_game_slow()
 		elif result == "do_nothing":
 			pass
 		else:

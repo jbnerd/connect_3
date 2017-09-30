@@ -22,14 +22,19 @@ def show_text(width, height):
 		text_t.setpos(-1 * width/2 + 10, temp[1] - height/13)
 
 	gameplay_cood_list = []
-	text_t.setpos(90, (-1 * height)/2 + 50)
-	start1 = (90, (-1 * height)/2 + 50)
+	text_t.setpos(0, (-1 * height)/2 + 50)
+	start1 = (0, (-1 * height)/2 + 50)
 	gameplay_cood_list.append(start1)
-	text_t.write("New Game", move = True, font = ("Arial", 15, "bold"))
+	text_t.write("New Game Slow", move = True, font = ("Arial", 15, "bold"))
 	gameplay_cood_list.append(text_t.pos())
 	start2 = text_t.pos()[0] + 30, text_t.pos()[1]
 	gameplay_cood_list.append(start2)
 	text_t.setpos(text_t.pos()[0] + 30, text_t.pos()[1])
+	text_t.write("New Game Fast", move = True, font = ("Arial", 15, "bold"))
+	gameplay_cood_list.append(text_t.pos())
+	text_t.setpos(text_t.pos()[0] + 30, text_t.pos()[1])
+	start3 = text_t.pos()[0] + 30, text_t.pos()[1]
+	gameplay_cood_list.append(start3)
 	text_t.write("Exit", move = True, font = ("Arial", 15, "bold"))
 	gameplay_cood_list.append(text_t.pos())
 

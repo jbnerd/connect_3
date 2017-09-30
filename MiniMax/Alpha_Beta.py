@@ -7,7 +7,10 @@ class State(object):
 		self.player = player
 
 	def __str__(self):
-		return str(self.matrix[0]) + "\n" + str(self.matrix[1]) + "\n" + str(self.matrix[2]) + "\n" + str(self.matrix[3]) + "\n - player: " + str(self.player)
+		if self.player == 1:
+			return str(self.matrix[0]) + "\n" + str(self.matrix[1]) + "\n" + str(self.matrix[2]) + "\n" + str(self.matrix[3]) + "\n Bot's Turn"
+		else:
+			return str(self.matrix[0]) + "\n" + str(self.matrix[1]) + "\n" + str(self.matrix[2]) + "\n" + str(self.matrix[3]) + "\n Player's Turn"
 
 	def __repr__(self):
 		return str(self.matrix)
@@ -217,12 +220,23 @@ def max_value(state, alpha, beta):
 	# print(v, ret, "return max")
 	return v, ret
 
-def main():
-	begin = State(matrix = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]])
-	begin.player = begin.player_turn()
-	print(begin)
-	# print("-----------------------------------------------------------------------------")
-	print(begin.alpha_beta_search())
+def start_game_alpha_beta():
+	begin = State()
+	state = begin
+	while True:
+		bot_action = state.alpha_beta_search()
+		next_state = state.result(bot_action)
+		print(next_state)
+		is_full, is_won = next_state.terminal_test()
+		if is_full or is_won:
+			print("Bot wins")
+			break
+		human_action = raw_input()
+		human_action = int(human_action)
+		state = next_state.result(human_action)
+		print(state)
+
+		
 	
 if __name__ == "__main__":
-	main()
+	start_game_alpha_beta()

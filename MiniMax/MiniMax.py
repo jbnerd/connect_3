@@ -6,8 +6,17 @@ class State(object):
 		self.matrix = matrix
 		self.player = player
 
+	def __eq__(self, other):
+		return self.matrix == other.matrix and self.player == other.player
+
+	def __ne__(self, other):
+		return not self.__eq__(other)
+
 	def __str__(self):
-		return "state: " + str(self.matrix) + " - player: " + str(self.player)
+		if self.player == 1:
+			return str(self.matrix[0]) + "\n" + str(self.matrix[1]) + "\n" + str(self.matrix[2]) + "\n" + str(self.matrix[3]) + "\n Bot's Turn"
+		else:
+			return str(self.matrix[0]) + "\n" + str(self.matrix[1]) + "\n" + str(self.matrix[2]) + "\n" + str(self.matrix[3]) + "\n Player's Turn"
 
 	def __repr__(self):
 		return str(self.matrix)
@@ -115,26 +124,30 @@ class State(object):
 					# print("hori")
 					is_won = True
 					# return False, result
-				result = self.check_verti(row_num, col_num)
-				if result == True:
-					# print("verti")
-					is_won = True
-					# return False, result
-				result = self.check_right_diag(row_num, col_num)
-				if result == True:
-					# print("rigth_diag")
-					is_won = True
-					# return False, result
-				result = self.check_left_diag(row_num, col_num)
-				if result == True:
-					# print("left_diag")
-					is_won = True
-					# return False, result
-				result = self.check_full()
-				if result == True:
-					# print("full")
-					is_full = True
-					# return True, True
+				else:
+					result = self.check_verti(row_num, col_num)
+					if result == True:
+						# print("verti")
+						is_won = True
+						# return False, result
+					else:
+						result = self.check_right_diag(row_num, col_num)
+						if result == True:
+							# print("rigth_diag")
+							is_won = True
+							# return False, result
+						else:
+							result = self.check_left_diag(row_num, col_num)
+							if result == True:
+								# print("left_diag")
+								is_won = True
+								# return False, result
+							else:
+								result = self.check_full()
+								if result == True:
+									# print("full")
+									is_full = True
+									# return True, True
 		# return False, False
 		return is_full, is_won
 
@@ -150,14 +163,14 @@ class State(object):
 	def minimax_decision(self):
 		action_list = self.action()
 		util_values = {}
+		explored = {}
 		for action in action_list:
 			temp = self.result(action)
 			if temp is not None:
 				# print(temp)
-				util_values[action] = min_value(temp)#, explored)
-				# expl_values.append(min_value(temp))
+				util_values[action] = min_value(temp, explored)
 		# print("-------------------------")
-		print(util_values)
+		# print(util_values)
 		max_val = -100
 		action = -1
 		for act, util_value in util_values.items():
@@ -166,7 +179,7 @@ class State(object):
 				action = act
 		return action
 
-def min_value(state):#, explored):
+def min_value(state, explored):
 	is_full, is_won = state.terminal_test()
 	if is_won:
 		# print("terminal test: " + str(state.utility_function()))
@@ -180,13 +193,13 @@ def min_value(state):#, explored):
 	util_values = []
 	for action in action_list:
 		temp = state.result(action)
-		if temp is not None:# and temp not in explored:
+		if temp is not None and temp not in explored:
 			# print(temp)
-			maxi = max_value(temp)#, explored)
+			maxi = max_value(temp, explored)
 			util_values.append(maxi)
-			# explored[temp] = maxi
-		# elif temp is not None:
-		# 	util_values.append(explored[temp])
+			explored[temp] = maxi
+		elif temp is not None:
+			util_values.append(explored[temp])
 	# print("------------------------------------------------------------")
 	min_val = min(util_values)
 
@@ -195,7 +208,7 @@ def min_value(state):#, explored):
 	else:
 		return min_val
 
-def max_value(state):#, explored):
+def max_value(state, explored):
 	is_full, is_won = state.terminal_test()
 	if is_won:
 		return state.utility_function()
@@ -208,13 +221,13 @@ def max_value(state):#, explored):
 	util_values = []
 	for action in action_list:
 		temp = state.result(action)
-		if temp is not None:# and temp not in explored:
+		if temp is not None and temp not in explored:
 			# print(temp)
-			mini = min_value(temp)#, explored)
+			mini = min_value(temp, explored)
 			util_values.append(mini)
-		# 	explored[temp] = mini
-		# elif temp is not None:
-		# 	util_values.append(explored[temp])
+			explored[temp] = mini
+		elif temp is not None:
+			util_values.append(explored[temp])
 	# print("------------------------------------------------------------")
 	max_val = max(util_values)
 
@@ -223,19 +236,23 @@ def max_value(state):#, explored):
 	else:
 		return max_val
 
-def main():
-	begin = State(matrix = [[1,2,1,2],[2,1,2,1],[0,0,0,0],[0,0,0,0]])
-	begin.player = begin.player_turn()
-	# print(begin)
-	# print("-----------------------------------------------------------------------------")
-	# action_list = begin.action()
-	# for action in action_list:
-	# 	temp = begin.result(action)
-	# 	if temp is not None:
-	# 		print(begin.result(action))
-	# print(begin.terminal_test())
-	print(begin.minimax_decision())
-	# print(begin.terminal_test())
+def start_game_minimax():
+	begin = State()
+	state = begin
+	while True:
+		bot_action = state.minimax_decision()
+		next_state = state.result(bot_action)
+		print(next_state)
+		is_full, is_won = next_state.terminal_test()
+		if is_full or is_won:
+			print("Bot wins")
+			break
+		human_action = raw_input()
+		human_action = int(human_action)
+		state = next_state.result(human_action)
+		print(state)
 
+		
+	
 if __name__ == "__main__":
-	main()
+	start_game_minimax()
