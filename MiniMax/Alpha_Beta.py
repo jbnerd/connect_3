@@ -151,17 +151,18 @@ class State(object):
 				return 1
 
 	def alpha_beta_search(self):
-		v, action = max_value(self, -100, 100)
-		return action
+		v, action, num_nodes = max_value(self, -100, 100)
+		return action, num_nodes
 		
 def min_value(state, alpha, beta):#, explored):
 	# print("min")
 	is_full, is_won = state.terminal_test()
 	if is_won:
-		return state.utility_function(), None
+		return state.utility_function(), None, 0
 	elif is_full:
-		return 0, None
+		return 0, None, 0
 
+	num_nodes = 0
 	v = 100
 	action_list = state.action()
 	ret = None
@@ -170,7 +171,9 @@ def min_value(state, alpha, beta):#, explored):
 		temp = state.result(action)
 		if temp is not None:
 			# print(temp)
-			maxi, garb = max_value(temp, alpha, beta)
+			num_nodes += 1
+			maxi, garb, temp_num_nodes = max_value(temp, alpha, beta)
+			num_nodes += temp_num_nodes
 			# print("min------------------------------------------------------------")
 			if v > maxi:
 				# print(v, ret, "test1 min")
@@ -180,21 +183,22 @@ def min_value(state, alpha, beta):#, explored):
 			# ret = action
 			if v <= alpha:
 				# print(v, ret, "test2 min")
-				return v, ret
+				return v, ret, num_nodes
 			# if beta > v:
 			# 	beta = v
 			beta = min(beta, v)
 	# print(v, ret, "return min")
-	return v, ret
+	return v, ret, num_nodes
 
 def max_value(state, alpha, beta):
 	# print("max")
 	is_full, is_won = state.terminal_test()
 	if is_won:
-		return state.utility_function(), None
+		return state.utility_function(), None, 0
 	elif is_full:
-		return 0, None
+		return 0, None, 0
 
+	num_nodes = 0
 	v = -100
 	action_list = state.action()
 	ret = None
@@ -203,7 +207,9 @@ def max_value(state, alpha, beta):
 		temp = state.result(action)
 		if temp is not None:
 			# print(temp)
-			mini, garb = min_value(temp, alpha, beta)
+			num_nodes += 1
+			mini, garb, temp_num_nodes = min_value(temp, alpha, beta)
+			num_nodes += temp_num_nodes
 			# print("max------------------------------------------------------------")
 			if v < mini:
 				# print(v, ret, "test1 max")
@@ -213,12 +219,12 @@ def max_value(state, alpha, beta):
 			# ret = action
 			if v >= beta:
 				# print(v, ret, "test2 max")
-				return v, ret
+				return v, ret, num_nodes
 			# if alpha < v:
 			# 	alpha = v
 			alpha = max(alpha, v)
 	# print(v, ret, "return max")
-	return v, ret
+	return v, ret, num_nodes
 
 def start_game_alpha_beta():
 	begin = State()

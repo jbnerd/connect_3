@@ -1,4 +1,5 @@
 import copy
+import random
 
 class myState(object):
 	"""docstring for myState"""
@@ -162,58 +163,73 @@ class myState(object):
 
 	def minimax_decision(self):
 		action_list = self.action()
+		num_nodes = 0
+		depth_of_stack = 0
 		util_values = {}
 		explored = {}
 		for action in action_list:
 			temp = self.result(action)
 			if temp is not None:
 				# print(temp)
-				util_values[action] = min_value(temp, explored)
+				num_nodes += 1
+				util_values[action], temp_num_nodes, temp_depth_of_stack = min_value(temp, explored, depth_of_stack)
+				if depth_of_stack < temp_depth_of_stack:
+					depth_of_stack = temp_depth_of_stack
+				num_nodes += temp_num_nodes
 		# print("-------------------------")
 		# print(util_values)
-		max_val = -100
+		# max_val = -100
+		max_val = 1
 		action = -1
+		ret_actions = []
 		for act, util_value in util_values.items():
-			if max_val < util_value:
-				max_val = util_value
-				action = act
-		return action
+			if util_value == max_val:
+				ret_actions.append(act)
+		action = random.choice(ret_actions)
+		return action, num_nodes, depth_of_stack
 
-def min_value(state, explored):
+def min_value(state, explored, depth_of_stack):
 	is_full, is_won = state.terminal_test()
 	if is_won:
 		# print("terminal test: " + str(state.utility_function()))
-		return state.utility_function()
+		return state.utility_function(), 0, depth_of_stack
 	elif is_full:
-		return 0
+		return 0, 0, depth_of_stack
 
+	num_nodes = 0
+	depth_of_stack += 1
 	v = 100
 	action_list = state.action()
-
+	
 	util_values = []
 	for action in action_list:
 		temp = state.result(action)
 		if temp is not None and temp not in explored:
 			# print(temp)
-			maxi = max_value(temp, explored)
+			num_nodes += 1
+			maxi, temp_num_nodes, garbage = max_value(temp, explored, depth_of_stack)
+			num_nodes += temp_num_nodes
 			util_values.append(maxi)
 			explored[temp] = maxi
 		elif temp is not None:
+			num_nodes += 1
 			util_values.append(explored[temp])
 	# print("------------------------------------------------------------")
 	min_val = min(util_values)
 	if v < min_val:
-		return v
+		return v, num_nodes, depth_of_stack
 	else:
-		return min_val
+		return min_val, num_nodes, depth_of_stack
 
-def max_value(state, explored):
+def max_value(state, explored, depth_of_stack):
 	is_full, is_won = state.terminal_test()
 	if is_won:
-		return state.utility_function()
+		return state.utility_function(), 0, depth_of_stack
 	elif is_full:
-		return 0
+		return 0, 0, depth_of_stack
 
+	num_nodes = 0
+	depth_of_stack += 1
 	v = -100
 	action_list = state.action()
 
@@ -221,24 +237,27 @@ def max_value(state, explored):
 	for action in action_list:
 		temp = state.result(action)
 		if temp is not None and temp not in explored:
+			num_nodes += 1
 			# print(temp)
-			mini = min_value(temp, explored)
+			mini, temp_num_nodes, garbage = min_value(temp, explored, depth_of_stack)
+			num_nodes += temp_num_nodes
 			util_values.append(mini)
 			explored[temp] = mini
 		elif temp is not None:
+			num_nodes += 1
 			util_values.append(explored[temp])
 	# print("------------------------------------------------------------")
 	max_val = max(util_values)
 	if v > max_val:
-		return v
+		return v, num_nodes, depth_of_stack
 	else:
-		return max_val
+		return max_val, num_nodes, depth_of_stack
 
 def start_game_minimax():
 	begin = myState()
 	state = begin
 	while True:
-		bot_action = state.minimax_decision()
+		bot_action, num_nodes, garbage = state.minimax_decision()
 		next_state = state.result(bot_action)
 		print(next_state)
 		is_full, is_won = next_state.terminal_test()

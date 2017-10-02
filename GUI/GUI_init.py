@@ -27,13 +27,13 @@ def show_text(width, height):
 	text_t.setpos(0, (-1 * height)/2 + 50)
 	start1 = (0, (-1 * height)/2 + 50)
 	gameplay_cood_list.append(start1)
-	text_t.write("New Game Slow", move = True, font = ("Arial", 15, "bold"))
+	text_t.write("MiniMax", move = True, font = ("Arial", 15, "bold"))
 	gameplay_cood_list.append(text_t.pos())
 
 	start2 = (text_t.pos()[0] + 30, text_t.pos()[1])
 	gameplay_cood_list.append(start2)
 	text_t.setpos(text_t.pos()[0] + 30, text_t.pos()[1])
-	text_t.write("New Game Fast", move = True, font = ("Arial", 15, "bold"))
+	text_t.write("Alpha Beta Pruning", move = True, font = ("Arial", 15, "bold"))
 	gameplay_cood_list.append(text_t.pos())
 
 	start3 = (text_t.pos()[0] + 30, text_t.pos()[1])
