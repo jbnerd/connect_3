@@ -1,3 +1,8 @@
+##########################
+# Abhishek V Joshi
+# 2015A7PS0116P
+##########################
+
 from turtle import *
 from GUI.GUI_init import *
 import sys
@@ -121,11 +126,11 @@ class CheckClick(object):
 				if is_won:
 					print("Bot Wins")
 					self.game_over = 1
-					if self.num_minimax_games <= 9:
+					if self.num_minimax_games <= 1:
 						self.tot_time_ten_times += self.tot_time_minimax
 						self.num_minimax_games += 1
 
-					if self.num_minimax_games == 10:
+					if self.num_minimax_games == 2:
 						avg = float(self.tot_time_ten_times)/self.num_minimax_games
 						self.text_t.penup()
 						self.text_t.setpos(self.r_cood_list[9][0], self.r_cood_list[9][1])

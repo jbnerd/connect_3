@@ -1,0 +1,7 @@
+*.pyc
+*/__pycache__
+*.pdf
+test.py
+*.docx
+*.zip
+Submission
